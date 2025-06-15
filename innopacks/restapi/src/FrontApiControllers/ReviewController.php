@@ -1,0 +1,59 @@
+<?php
+/* */
+
+namespace InnoShop\RestAPI\FrontApiControllers;
+
+use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use InnoShop\Common\Models\Review;
+use InnoShop\Common\Repositories\ReviewRepo;
+use InnoShop\Common\Resources\ReviewListItem;
+use Throwable;
+
+class ReviewController extends BaseController
+{
+    /**
+     * @return AnonymousResourceCollection
+     */
+    public function index(): AnonymousResourceCollection
+    {
+        $filters = [
+            'customer_id' => token_customer_id(),
+        ];
+
+        $list = ReviewRepo::getInstance()->builder($filters)->paginate();
+
+        return ReviewListItem::collection($list);
+    }
+
+    /**
+     * @param  Request  $request
+     * @return mixed
+     * @throws Throwable
+     */
+    public function store(Request $request): mixed
+    {
+        try {
+            $data = $request->all();
+
+            $data['customer_id'] = token_customer_id();
+
+            $review = ReviewRepo::getInstance()->create($data);
+
+            return create_json_success(new ReviewListItem($review));
+        } catch (\Exception $e) {
+            return json_fail($e->getMessage());
+        }
+    }
+
+    /**
+     * @param  Review  $review
+     * @return mixed
+     */
+    public function destroy(Review $review): mixed
+    {
+        $review->delete();
+
+        return delete_json_success();
+    }
+}
