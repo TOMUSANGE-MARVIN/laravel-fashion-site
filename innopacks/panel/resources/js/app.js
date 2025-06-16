@@ -200,7 +200,7 @@ $(function () {
 
     layer.open({
       type: 2,
-      title: "文件管理器",
+      title: "",
       shadeClose: false,
       shade: 0.8,
       area: ["90%", "90%"],

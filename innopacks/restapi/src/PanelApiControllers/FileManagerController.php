@@ -63,7 +63,7 @@ class FileManagerController extends BaseController
             'type'        => request()->query('type', 'all'),
             'base_folder' => '/',
             'driver'      => plugin_setting('file_manager', 'driver', 'local'),
-            'title'       => plugin_setting('file_manager', 'driver') === 'oss' ? 'OSS 文件管理' : '图片空间',
+            'title'       => plugin_setting('file_manager', 'driver') === 'oss' ? 'OSS 文件' : '图片空间',
             'config'      => [
                 'driver'   => plugin_setting('file_manager', 'driver', 'local'),
                 'endpoint' => plugin_setting('file_manager', 'endpoint', ''),

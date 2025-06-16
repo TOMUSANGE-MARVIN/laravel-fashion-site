@@ -27,5 +27,5 @@ return [
     'target_dir_exist'            => '目標目錄存在',
     'target_dir_not_exist'        => '目標目錄不存在',
     'target_not_exist'            => '目標不存在',
-    'title'                       => '文件管理器',
+    'title'                       => '/* */',
 ];

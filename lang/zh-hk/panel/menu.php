@@ -22,7 +22,7 @@ return [
     'customer_groups'    => '客戶分組',
     'customers'          => '客戶管理',
     'dashboard'          => '概覽',
-    'file_manager'       => '文件管理器',
+    'file_manager'       => 'file Manager',
     'locale'             => '語言管理',
     'locales'            => '語言設置',
     'localization'       => '本地化',

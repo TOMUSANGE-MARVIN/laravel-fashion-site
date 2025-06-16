@@ -2,7 +2,7 @@
 /* */
 
 return [
-    'title' => '文件管理器',
+    'title' => 'File Manager',
 
     'empty_path'                  => '地址为空',
     'source_dir_not_exist'        => '源目录不存在',
