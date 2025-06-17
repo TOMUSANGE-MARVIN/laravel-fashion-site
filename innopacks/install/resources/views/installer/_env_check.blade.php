@@ -1,4 +1,4 @@
-<table class="table">
+{{-- <table class="table">
   <thead>
   <tr>
     <th colspan="3" class="bg-light">{{ __('install/common.env_detection') }}</th>
@@ -50,4 +50,4 @@
     </tr>
   @endforeach
   </tbody>
-</table>
+</table> --}}
