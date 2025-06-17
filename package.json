@@ -3,14 +3,14 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "build": "node node_modules/laravel-mix/bin/cli.js --production --mix-config=webpack.mix.js",
-    "dev": "node node_modules/laravel-mix/bin/cli.js --mix-config=webpack.mix.js",
-    "development": "node node_modules/laravel-mix/bin/cli.js --mix-config=webpack.mix.js",
-    "watch": "node node_modules/laravel-mix/bin/cli.js watch --mix-config=webpack.mix.js",
-    "watch-poll": "node node_modules/laravel-mix/bin/cli.js watch --mix-config=webpack.mix.js -- --watch-options-poll=1000",
-    "hot": "node node_modules/laravel-mix/bin/cli.js watch --hot --mix-config=webpack.mix.js",
+    "build": "mix --production --mix-config=webpack.mix.js",
+    "dev": "mix --mix-config=webpack.mix.js",
+    "development": "mix --mix-config=webpack.mix.js",
+    "watch": "mix watch --mix-config=webpack.mix.js",
+    "watch-poll": "mix watch --mix-config=webpack.mix.js -- --watch-options-poll=1000",
+    "hot": "mix watch --hot --mix-config=webpack.mix.js",
     "prod": "npm run production",
-     "production": "node node_modules/laravel-mix/bin/cli.js --production --mix-config=webpack.mix.js"
+    "production": "mix --production --mix-config=webpack.mix.js"
   },
   "devDependencies": {
     "axios": "^1.6.4",
@@ -28,7 +28,6 @@
     "bootstrap": "^5.3.3",
     "bootstrap-icons": "^1.11.3",
     "codemirror": "^6.0.1",
-     "laravel-mix": "^6.0.49",
-    "resolve-url-loader": "^5.0.0"
+    
   }
 }
