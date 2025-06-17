@@ -24,5 +24,5 @@ module.exports = {
       filename: 'css/[name].css'
     })
   ],
-  mode: 'development'
+  mode: 'production'
 };
