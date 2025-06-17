@@ -19,11 +19,15 @@
     "webpack-cli": "^5.1.4",
     "sass": "^1.63.6",
     "sass-loader": "^13.3.2",
-    "postcss": "^8.4.24"
-  },
-  "devDependencies": {
+    "postcss": "^8.4.24",
     "axios": "^1.6.4",
     "jquery": "^3.7.1",
+    "bootstrap": "^5.3.0",
+    "bootstrap-icons": "^1.10.5",
+    "popper.js": "^1.16.1",
+    "@popperjs/core": "^2.11.8"
+  },
+  "devDependencies": {
     "laravel-vite-plugin": "^1.0"
   }
 }
