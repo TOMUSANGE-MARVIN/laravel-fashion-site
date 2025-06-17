@@ -23,3 +23,11 @@ function checkComplete() {
         }
     });
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Add CSS load verification
+    const styleSheets = document.styleSheets;
+    if (styleSheets.length === 0) {
+        console.warn('No stylesheets detected - check CSS paths');
+    }
+});
