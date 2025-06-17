@@ -1,2 +1,3 @@
-// Your application entry point
+import './styles/main.css';
+
 console.log('Application started');
