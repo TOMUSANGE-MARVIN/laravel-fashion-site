@@ -3,15 +3,14 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-   
-   "build": "mix --production",
-    "dev": "mix",
-    "development": "mix",
-    "watch": "mix watch",
-    "watch-poll": "mix watch -- --watch-options-poll=1000",
-    "hot": "mix watch --hot",
+    "build": "mix --production --mix-config=webpack.mix.js",
+    "dev": "mix --mix-config=webpack.mix.js",
+    "development": "mix --mix-config=webpack.mix.js",
+    "watch": "mix watch --mix-config=webpack.mix.js",
+    "watch-poll": "mix watch --mix-config=webpack.mix.js -- --watch-options-poll=1000",
+    "hot": "mix watch --hot --mix-config=webpack.mix.js",
     "prod": "npm run production",
-    "production": "mix --production"
+    "production": "mix --production --mix-config=webpack.mix.js"
   },
   "devDependencies": {
     "axios": "^1.6.4",
