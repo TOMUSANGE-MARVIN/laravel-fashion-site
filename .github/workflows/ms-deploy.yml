@@ -79,6 +79,7 @@ jobs:
           StrictHostKeyChecking no
         END
         
+        
         # Debug SSH key format (will be masked in logs)
         head -n 1 ~/.ssh/deploy_key | grep -q "BEGIN" || echo "Invalid key format"
         
