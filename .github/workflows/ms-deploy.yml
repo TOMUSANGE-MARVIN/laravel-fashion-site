@@ -55,10 +55,16 @@ jobs:
         node-version: '18'
         cache: 'npm'
         
+    - name: Verify webpack.mix.js
+      run: |
+        if [ ! -f webpack.mix.js ]; then
+          echo "webpack.mix.js is missing"
+          exit 1
+        fi
+        
     - name: Install NPM dependencies
       run: |
         rm -rf node_modules
-        rm -f package-lock.json
         npm install
       
     - name: Build assets
