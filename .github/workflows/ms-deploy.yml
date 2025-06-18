@@ -78,7 +78,7 @@ jobs:
           IdentityFile ~/.ssh/deploy_key
           StrictHostKeyChecking no
         END
-        
+
         
         # Debug SSH key format (will be masked in logs)
         head -n 1 ~/.ssh/deploy_key | grep -q "BEGIN" || echo "Invalid key format"
@@ -96,6 +96,7 @@ jobs:
           --exclude='node_modules/' \
           -e "ssh -o StrictHostKeyChecking=no" \
           ./ vps:${{ secrets.DEPLOY_PATH }}
+          
         
     - name: Post Deploy Commands
       run: |
