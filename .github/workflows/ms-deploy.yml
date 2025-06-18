@@ -70,8 +70,10 @@ jobs:
         printf '%s\n' "${{ secrets.VPS_SSH_KEY }}" > ~/.ssh/deploy_key
         chmod 700 ~/.ssh
         chmod 600 ~/.ssh/deploy_key
+        # Debug: print first and last lines of the key
+        head -n 1 ~/.ssh/deploy_key
+        tail -n 1 ~/.ssh/deploy_key
         eval $(ssh-agent -s)
-        ssh-add -l
         ssh-add ~/.ssh/deploy_key
         ssh-add -l
         cat >>~/.ssh/config <<END
