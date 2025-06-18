@@ -67,16 +67,17 @@ jobs:
     - name: Configure SSH
       run: |
         mkdir -p ~/.ssh
-        echo "${{ secrets.VPS_SSH_KEY }}" | base64 -d > ~/.ssh/deploy_key
+        echo "${{ secrets.VPS_SSH_KEY }}" > ~/.ssh/deploy_key
         chmod 600 ~/.ssh/deploy_key
         eval $(ssh-agent -s)
-        ssh-add -N "" ~/.ssh/deploy_key
+        ssh-add ~/.ssh/deploy_key
         cat >>~/.ssh/config <<END
         Host vps
           HostName ${{ secrets.SSH_HOST }}
           User ${{ secrets.SSH_USERNAME }}
           IdentityFile ~/.ssh/deploy_key
           StrictHostKeyChecking no
+          AddKeysToAgent yes
         END
         
         # Debug SSH key format (will be masked in logs)
