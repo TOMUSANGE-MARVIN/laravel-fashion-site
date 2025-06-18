@@ -68,23 +68,23 @@ jobs:
       run: |
         mkdir -p ~/.ssh
         printf '%s\n' "${{ secrets.VPS_SSH_KEY }}" > ~/.ssh/deploy_key
+        chmod 700 ~/.ssh
         chmod 600 ~/.ssh/deploy_key
         eval $(ssh-agent -s)
+        ssh-add -l
         ssh-add ~/.ssh/deploy_key
+        ssh-add -l
         cat >>~/.ssh/config <<END
         Host vps
           HostName ${{ secrets.SSH_HOST }}
           User ${{ secrets.SSH_USERNAME }}
           IdentityFile ~/.ssh/deploy_key
           StrictHostKeyChecking no
+          LogLevel DEBUG3
         END
-
-        
-        # Debug SSH key format (will be masked in logs)
-        head -n 1 ~/.ssh/deploy_key | grep -q "BEGIN" || echo "Invalid key format"
         
     - name: Test SSH connection
-      run: ssh vps 'echo "SSH connection successful"'
+      run: ssh -v vps 'echo "SSH connection successful"'
         
     - name: Deploy to VPS
       run: |
