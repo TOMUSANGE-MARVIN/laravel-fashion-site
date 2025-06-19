@@ -13,14 +13,14 @@ return new class extends Migration
     {
         if (! Schema::hasColumn('customers', 'balance')) {
             Schema::table('customers', function (Blueprint $table) {
-                $table->decimal('balance')->default(0)->after('name')->comment('Customer Name');
+                $table->decimal('balance')->default(0)->after('name')->comment('Customer Balance');
             });
         }
 
         if (! Schema::hasTable('customer_transactions')) {
             Schema::create('customer_transactions', function (Blueprint $table) {
                 $table->id();
-                $table->integer('customer_id')->index('customer_id')->comment('Customer ID');
+                $table->integer('customer_id')->index()->comment('Customer ID'); // Remove the explicit index name
                 $table->decimal('amount')->comment('Amount');
                 $table->string('type')->comment('Transaction Type');
                 $table->text('comment')->nullable()->comment('Comment');
@@ -36,5 +36,11 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('customer_transactions');
+        
+        if (Schema::hasColumn('customers', 'balance')) {
+            Schema::table('customers', function (Blueprint $table) {
+                $table->dropColumn('balance');
+            });
+        }
     }
 };
