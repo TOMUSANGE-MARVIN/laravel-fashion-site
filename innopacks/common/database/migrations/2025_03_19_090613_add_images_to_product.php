@@ -21,7 +21,7 @@ return new class extends Migration
 
         if (!Schema::hasColumn('products', 'price')) {
             Schema::table('products', function (Blueprint $table) {
-                $table->decimal('price')->default(0)->after('brand_id');
+                $table->decimal('price', 15, 4)->default(0)->after('brand_id');
             });
         }
 
@@ -31,29 +31,19 @@ return new class extends Migration
             });
         }
 
-        // Drop columns using SQLite-compatible approach
-        $columns = ['product_image_id', 'product_video_id', 'product_sku_id'];
-        foreach ($columns as $column) {
+        // For SQLite, instead of dropping columns (which is problematic),
+        // we'll just leave the old columns and ignore them in the application
+        // This is safer and avoids the table recreation issues
+        
+        // If you absolutely need to remove the columns, you can do it manually
+        // after the migration or create a separate maintenance script
+        
+        // Optional: Set the old columns to NULL to indicate they're deprecated
+        $columnsToDeprecate = ['product_image_id', 'product_video_id', 'product_sku_id'];
+        
+        foreach ($columnsToDeprecate as $column) {
             if (Schema::hasColumn('products', $column)) {
-                // Create new table without the column
-                DB::statement("CREATE TEMPORARY TABLE products_backup AS SELECT * FROM products");
-                Schema::drop('products');
-                
-                // Recreate table without the column
-                Schema::create('products', function (Blueprint $table) {
-                    $table->id();
-                    // Add all columns except the one to drop
-                    // This assumes you have access to the current schema
-                    $table->string('name');
-                    $table->json('images')->nullable();
-                    $table->decimal('price')->default(0);
-                    // ... add other columns as needed
-                    $table->timestamps();
-                });
-
-                // Copy data back
-                DB::statement("INSERT INTO products SELECT * FROM products_backup");
-                DB::statement("DROP TABLE products_backup");
+                DB::table('products')->update([$column => null]);
             }
         }
     }
@@ -63,6 +53,23 @@ return new class extends Migration
      */
     public function down(): void 
     {
-        // Add rollback logic if needed
+        // Remove added columns
+        if (Schema::hasColumn('products', 'images')) {
+            Schema::table('products', function (Blueprint $table) {
+                $table->dropColumn('images');
+            });
+        }
+
+        if (Schema::hasColumn('products', 'price')) {
+            Schema::table('products', function (Blueprint $table) {
+                $table->dropColumn('price');
+            });
+        }
+
+        if (Schema::hasColumn('product_skus', 'images')) {
+            Schema::table('product_skus', function (Blueprint $table) {
+                $table->dropColumn('images');
+            });
+        }
     }
 };
