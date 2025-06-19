@@ -103,6 +103,10 @@ jobs:
     - name: Post Deploy Commands
       run: |
         ssh vps "cd ${{ secrets.DEPLOY_PATH }} && \
+        mkdir -p bootstrap/cache && \
+        chmod -R 775 bootstrap/cache && \
+        mkdir -p storage/framework/{sessions,views,cache} && \
+        chmod -R 775 storage && \
         php artisan down && \
         php artisan migrate --force && \
         php artisan db:seed --force && \
