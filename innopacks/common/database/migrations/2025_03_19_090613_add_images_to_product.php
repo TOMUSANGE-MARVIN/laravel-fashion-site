@@ -11,32 +11,42 @@ return new class extends Migration
      */
     public function up(): void
     {
-        if (! Schema::hasColumn('products', 'images')) {
+        // Add new columns first
+        if (!Schema::hasColumn('products', 'images')) {
             Schema::table('products', function (Blueprint $table) {
                 $table->json('images')->nullable()->after('brand_id');
             });
         }
 
-        if (! Schema::hasColumn('products', 'price')) {
+        if (!Schema::hasColumn('products', 'price')) {
             Schema::table('products', function (Blueprint $table) {
                 $table->decimal('price')->default(0)->after('brand_id');
             });
         }
 
-        if (! Schema::hasColumn('product_skus', 'images')) {
+        if (!Schema::hasColumn('product_skus', 'images')) {
             Schema::table('product_skus', function (Blueprint $table) {
                 $table->json('images')->nullable()->after('product_id');
             });
         }
 
+        // Drop columns safely one by one
         if (Schema::hasColumn('products', 'product_image_id')) {
-            Schema::dropColumns('products', 'product_image_id');
+            Schema::table('products', function (Blueprint $table) {
+                $table->dropColumn('product_image_id');
+            });
         }
+
         if (Schema::hasColumn('products', 'product_video_id')) {
-            Schema::dropColumns('products', 'product_video_id');
+            Schema::table('products', function (Blueprint $table) {
+                $table->dropColumn('product_video_id');
+            });
         }
+
         if (Schema::hasColumn('products', 'product_sku_id')) {
-            Schema::dropColumns('products', 'product_sku_id');
+            Schema::table('products', function (Blueprint $table) {
+                $table->dropColumn('product_sku_id');
+            });
         }
     }
 
