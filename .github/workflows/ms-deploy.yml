@@ -96,17 +96,17 @@ jobs:
           --exclude='storage/' \
           --exclude='tests/' \
           --exclude='node_modules/' \
+          --exclude='plugins/' \
           -e "ssh -o StrictHostKeyChecking=no" \
           ./ vps:${{ secrets.DEPLOY_PATH }}
           
-        
     - name: Post Deploy Commands
       run: |
         ssh vps "cd ${{ secrets.DEPLOY_PATH }} && \
-        mkdir -p bootstrap/cache storage/framework/{sessions,views,cache} database && \
+        mkdir -p bootstrap/cache storage/framework/{sessions,views,cache} database plugins && \
         touch database/database.sqlite && \
-        chmod -R 775 bootstrap/cache storage database && \
-        chown -R deployer:www-data database/database.sqlite && \
+        chmod -R 775 bootstrap/cache storage database plugins && \
+        chown -R deployer:www-data database/database.sqlite plugins && \
         php artisan down && \
         php artisan migrate --force && \
         php artisan db:seed --force && \
