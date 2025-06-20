@@ -75,7 +75,7 @@ jobs:
     - name: Install Node dependencies and build assets
       run: |
         cd ${{ env.APP_PATH }}
-        npm ci
+        
         npm run build
 
     - name: Generate application key
