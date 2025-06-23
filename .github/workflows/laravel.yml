@@ -1,4 +1,4 @@
-name: COTE Blogs Application
+name: MS-Fashions
 
 on:
   push:
@@ -6,113 +6,147 @@ on:
 
 jobs:
   deploy:
-    runs-on: self-hosted
-
-    env:
-      APP_PATH: /home/deployer/actions-runner/msf/laravel-fashion-site/laravel-fashion-site
+    runs-on: ubuntu-latest
     steps:
+    - name: Checkout Code
+      uses: actions/checkout@v3
+
     - name: Setup PHP
-      uses: shivammathur/setup-php@15c43e89cdef867065b0213be354c2841860869e
+      uses: shivammathur/setup-php@v2
       with:
         php-version: '8.2'
-        extensions: mbstring, xml, ctype, iconv, intl, pdo_mysql, dom, filter, gd, json, mbstring, pdo, zip
 
-    - name: Checkout code
-      uses: actions/checkout@v4
+    - name: Install Composer Dependencies
+      run: composer install --optimize-autoloader
 
-    # - name: Create environment file
-    #   run: |
-    #     cd ${{ env.APP_PATH }}
-    #     cp .env.example .env
+    - name: Install Node
+      uses: actions/setup-node@v3
+      with:
+        node-version: '22'
 
-    - name: Configure environment variables
-      env:
-        DB_CONNECTION: ${{ secrets.DB_CONNECTION }}
-        DB_HOST: ${{ secrets.DB_HOST }}
-        DB_PORT: ${{ secrets.DB_PORT }}
-        DB_DATABASE: ${{ secrets.DB_DATABASE }}
-        DB_USERNAME: ${{ secrets.DB_USERNAME }}
-        DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-        APP_URL: ${{ secrets.APP_URL }}
-        APP_NAME: ${{ secrets.APP_NAME }}
-        APP_ENV: ${{ secrets.APP_ENV }}
-        APP_DEBUG: ${{ secrets.APP_DEBUG }}
-        MAIL_MAILER: ${{ secrets.MAIL_MAILER }}
-        MAIL_HOST: ${{ secrets.MAIL_HOST }}
-        MAIL_PORT: ${{ secrets.MAIL_PORT }}
-        MAIL_USERNAME: ${{ secrets.MAIL_USERNAME }}
-        MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
-        MAIL_ENCRYPTION: ${{ secrets.MAIL_ENCRYPTION }}
-        MAIL_FROM_ADDRESS: ${{ secrets.MAIL_FROM_ADDRESS }}
+    - name: Install NPM Dependencies
+      run: npm ci
+
+    - name: Build NPM Assets
+      run: npm run build
+
+    # Setup SSH key for rsync
+    - name: Setup SSH key
       run: |
-        cd ${{ env.APP_PATH }}
-        echo "APP_NAME=\"${APP_NAME}\"" >> .env
-        echo "APP_ENV=local" >> .env
-        echo "APP_DEBUG=true" >> .env
-        echo "APP_KEY=" >> .env
-        echo "APP_URL=${APP_URL}" >> .env
-        echo "" >> .env
-        echo "DB_CONNECTION=${DB_CONNECTION}" >> .env
-        echo "DB_HOST=${DB_HOST}" >> .env
-        echo "DB_PORT=${DB_PORT}" >> .env
-        echo "DB_DATABASE=${DB_DATABASE}" >> .env
-        echo "DB_USERNAME=${DB_USERNAME}" >> .env
-        echo "DB_PASSWORD=${DB_PASSWORD}" >> .env
-        echo "" >> .env
-        echo "MAIL_MAILER=${MAIL_MAILER}" >> .env
-        echo "MAIL_HOST=${MAIL_HOST}" >> .env
-        echo "MAIL_PORT=${MAIL_PORT}" >> .env
-        echo "MAIL_USERNAME=${MAIL_USERNAME}" >> .env
-        echo "MAIL_PASSWORD=${MAIL_PASSWORD}" >> .env
-        echo "MAIL_ENCRYPTION=${MAIL_ENCRYPTION}" >> .env
-        echo "MAIL_FROM_ADDRESS=${MAIL_FROM_ADDRESS}" >> .env
+        mkdir -p ~/.ssh
+        echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+        ssh-keyscan -H ${{ secrets.VPS_HOST }} >> ~/.ssh/known_hosts
 
-    - name: Install PHP dependencies
+    # Create exclude file for rsync
+    - name: Create rsync exclude file
       run: |
-        cd ${{ env.APP_PATH }}
-        composer install --optimize-autoloader --no-dev --no-interaction --prefer-dist
+        cat > rsync-exclude.txt << 'EOF'
+        .git/
+        .github/
+        node_modules/
+        .env
+        .env.example
+        README.md
+        .gitignore
+        tests/
+        phpunit.xml
+        storage/app/
+        storage/logs/
+        storage/framework/sessions/
+        storage/framework/views/
+        storage/framework/cache/data/
+        bootstrap/cache/
+        rsync-exclude.txt
+        EOF
 
-    - name: Install Node dependencies and build assets
+    # Prepare server directories
+    - name: Prepare server directories
       run: |
-        cd ${{ env.APP_PATH }}
-        
-        npm run build
+        ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << 'EOF'
+          # Create main directory
+          mkdir -p "${{ secrets.SERVER_DESTINATION }}"
+          cd "${{ secrets.SERVER_DESTINATION }}"
 
-    - name: Generate application key
-      run: |
-        cd ${{ env.APP_PATH }}
-        php artisan key:generate --force
+          # Create necessary Laravel directories
+          mkdir -p storage/app/public
+          mkdir -p storage/logs
+          mkdir -p storage/framework/{cache/data,sessions,views}
+          mkdir -p bootstrap/cache
+          mkdir -p public
 
-    - name: Clear all caches before migration
-      run: |
-        cd ${{ env.APP_PATH }}
-        php artisan cache:clear
-        php artisan config:clear
-        php artisan route:clear
-        php artisan view:clear
+          # Set proper permissions
+          chmod -R 755 storage bootstrap/cache 2>/dev/null || true
+        EOF
 
-    - name: Run database migrations
-      # env:
-      #   DB_CONNECTION: ${{ secrets.DB_CONNECTION }}
-      #   DB_HOST: ${{ secrets.DB_HOST }}
-      #   DB_PORT: ${{ secrets.DB_PORT }}
-      #   DB_DATABASE: ${{ secrets.DB_DATABASE }}
-      #   DB_USERNAME: ${{ secrets.DB_USERNAME }}
-      #   DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+    # Deploy with rsync
+    - name: Deploy with rsync
       run: |
-        cd ${{ env.APP_PATH }}
-        php artisan migrate 
-        echo "APP_DEBUG=true" >> .env
-        echo "APP_ENV=production" >> .env
+        rsync -avz --delete \
+          --exclude-from=rsync-exclude.txt \
+          --chmod=D755,F644 \
+          --rsync-path="sudo rsync" \
+          ./ ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:${{ secrets.SERVER_DESTINATION }}/
 
-    - name: Optimize application for production
+    # Post-deployment tasks
+    - name: Post-deployment configuration
       run: |
-        cd ${{ env.APP_PATH }}
-        php artisan config:cache
-        php artisan route:cache
-        php artisan view:cache
+        ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << 'EOF'
+          cd "${{ secrets.SERVER_DESTINATION }}"
 
-    - name: Create storage symbolic link
-      run: |
-        cd ${{ env.APP_PATH }}
-        php artisan storage:link
+          # Create .env file only if it doesn't exist
+          if [ ! -f ".env" ]; then
+            cat > .env << 'ENVEOF'
+        APP_NAME="${{ secrets.APP_NAME }}"
+        APP_ENV=${{ secrets.APP_ENV }}
+        APP_DEBUG=${{ secrets.APP_DEBUG }}
+        APP_KEY=
+        APP_URL=${{ secrets.APP_URL }}
+
+        DB_CONNECTION=${{ secrets.DB_CONNECTION }}
+        DB_HOST=${{ secrets.DB_HOST }}
+        DB_PORT=${{ secrets.DB_PORT }}
+        DB_DATABASE=${{ secrets.DB_DATABASE }}
+        DB_USERNAME=${{ secrets.DB_USERNAME }}
+        DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+
+        MAIL_MAILER=${{ secrets.MAIL_MAILER }}
+        MAIL_HOST=${{ secrets.MAIL_HOST }}
+        MAIL_PORT=${{ secrets.MAIL_PORT }}
+        MAIL_USERNAME=${{ secrets.MAIL_USERNAME }}
+        MAIL_PASSWORD=${{ secrets.MAIL_PASSWORD }}
+        MAIL_ENCRYPTION=${{ secrets.MAIL_ENCRYPTION }}
+        MAIL_FROM_ADDRESS=${{ secrets.MAIL_FROM_ADDRESS }}
+        ENVEOF
+          fi
+
+          # Generate application key only if APP_KEY is empty
+          if ! grep -q "APP_KEY=base64:" .env; then
+            php artisan key:generate --force
+          fi
+
+          # Set proper permissions
+          chmod +x artisan
+          chmod -R 775 storage bootstrap/cache
+          sudo chown -R www-data:www-data storage bootstrap/cache public/storage 2>/dev/null || true
+
+          # Create storage link if it doesn't exist
+          if [ ! -L "public/storage" ]; then
+            php artisan storage:link
+          fi
+
+          # Run database migrations
+          php artisan migrate --force
+
+          # Clear and optimize caches
+          php artisan config:clear
+          php artisan cache:clear
+          php artisan route:clear
+          php artisan view:clear
+          php artisan optimize:clear
+          php artisan config:cache
+          php artisan route:cache
+          php artisan view:cache
+
+          echo "Deployment completed successfully!"
+        EOF
