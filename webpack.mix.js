@@ -1,5 +1,16 @@
 const mix = require('laravel-mix');
 
+// Add this at the top to configure production settings
+if (mix.inProduction()) {
+    mix.options({
+        terser: {
+            extractComments: false,
+        },
+        devtool: false,
+        sourceMaps: false
+    });
+}
+
 /*
  |--------------------------------------------------------------------------
  | Mix Asset Management
@@ -25,7 +36,7 @@ if (theme === '') {
 }
 
 
-// panel
+// panel - remove sourceMaps for production
 mix.sass('innopacks/panel/resources/css/bootstrap/bootstrap.scss', 'public/build/panel/css/bootstrap.css');
 mix.sass('innopacks/panel/resources/css/app.scss', 'public/build/panel/css/app.css');
 mix.js('innopacks/panel/resources/js/app.js', 'public/build/panel/js/app.js');
@@ -33,23 +44,13 @@ mix.js('innopacks/panel/resources/js/app.js', 'public/build/panel/js/app.js');
 // install
 mix.sass('innopacks/install/resources/css/app.scss', 'public/build/install/css/app.css');
 
+// Remove sourceMaps() from this section for production
 mix.js('resources/js/app.js', 'public/js')
    .sass('resources/sass/app.scss', 'public/css')
-   .sourceMaps()
    .version();
 
-// Add jQuery globally if needed
+// Keep your jQuery autoload
 mix.autoload({
     jquery: ['$', 'window.jQuery', 'jQuery'],
     'popper.js/dist/umd/popper.js': ['Popper']
-});
-
-if (mix.inProduction()) {
-  mix.version();
-}
-
-mix.options({
-  terser: {
-    extractComments: false,
-  },
 });
