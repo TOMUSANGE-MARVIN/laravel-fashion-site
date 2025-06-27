@@ -1,11 +1,9 @@
 {
-    "/build/front/js/app.js": "/build/front/js/app.js?id=68dc366575b2ee498ffbd6f4c68e5d99",
-    "/build/panel/js/app.js": "/build/panel/js/app.js?id=bbfe874b151f6341d6605a82ef775064",
-    "/js/app.js": "/js/app.js?id=71b3609aa17a083ffdd47bde6b7e2a16",
-    "/build/install/css/app.css": "/build/install/css/app.css?id=43dd1897bf5b9a15fbe77f3d2efba836",
-    "/build/panel/css/app.css": "/build/panel/css/app.css?id=fe5bb762205f4908c4572e3e5e0d27e7",
-    "/build/panel/css/bootstrap.css": "/build/panel/css/bootstrap.css?id=89f4f367d043573da64a5fc7a0f30541",
-    "/build/front/css/app.css": "/build/front/css/app.css?id=15af4f0d3496a8d34740dca8868037c4",
-    "/build/front/css/bootstrap.css": "/build/front/css/bootstrap.css?id=4a5ef30a67d85d2eda8640799b51fd62",
-    "/css/app.css": "/css/app.css?id=41ef5c146bd692bb13d88310f94f3397"
+    "/build/front/js/app.js": "/build/front/js/app.js",
+    "/build/panel/js/app.js": "/build/panel/js/app.js",
+    "/build/install/css/app.css": "/build/install/css/app.css",
+    "/build/panel/css/app.css": "/build/panel/css/app.css",
+    "/build/panel/css/bootstrap.css": "/build/panel/css/bootstrap.css",
+    "/build/front/css/app.css": "/build/front/css/app.css",
+    "/build/front/css/bootstrap.css": "/build/front/css/bootstrap.css"
 }

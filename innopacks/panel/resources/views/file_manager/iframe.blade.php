@@ -19,7 +19,7 @@
 
 @section('page-bottom-btns')
   <div class="page-bottom-btns" id="bottom-btns">
-    <button class="btn btn-primary" @click="handleConfirm">Select & Submit</button>
+    <button class="btn btn-primary" @click="handleConfirm">选择提交</button>
   </div>
 @endsection
 
@@ -34,27 +34,27 @@
       overflow: hidden;
     }
 
-    /* Main content area */
+    /* 主内容区域 */
     .content-wrapper {
       overflow: hidden;
       position: relative;
     }
 
-    /* File manager content area */
+    /* 文件管理器内容区域 */
     .file-manager {
       height: 100%;
       display: flex;
       flex-direction: column;
     }
 
-    /* File list area */
+    /* 文件列表区域 */
     .file-list {
       flex: 1;
       overflow-y: auto;
       padding: 20px;
     }
 
-    /* Bottom buttons fixed at bottom */
+    /* 底部按钮固定在底部 */
     .page-bottom-btns {
       height: 60px;
       padding: 10px;
@@ -67,14 +67,14 @@
       z-index: 10;
     }
 
-    /* Left folder tree */
+    /* 左侧文件夹树 */
     .folder-tree {
       height: 100%;
       border-right: 1px solid #EBEEF5;
       overflow-y: auto;
     }
 
-    /* Toolbar styles */
+    /* 工具栏样式 */
     .file-toolbar {
       padding: 15px 20px;
       border-bottom: 1px solid #EBEEF5;
@@ -87,12 +87,12 @@
 
 @push('footer')
   <script>
-    // Create bottom button Vue instance
+    // 创建底部按钮的 Vue 实例
     new Vue({
       el: '#bottom-btns',
       methods: {
         handleConfirm() {
-          // Get main Vue instance and call its method
+          // 获取主 Vue 实例并调用其方法
           const mainApp = document.querySelector('#app').__vue__;
           if (mainApp && typeof mainApp.confirmSelection === 'function') {
             mainApp.confirmSelection();
@@ -101,7 +101,7 @@
       }
     });
 
-    // Get token from parent window
+    // 从父窗口获取 token
     window.getApiToken = () => {
       const token = window.parent?.document.querySelector('meta[name="api-token"]')?.getAttribute('content');
       console.log('Parent token:', token);
